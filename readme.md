@@ -39,5 +39,5 @@
 author: AlwaysLazy21   
 email: kunkun317@qq.com   
 
-支持作者
-![](支付宝.jpg)
+支持作者   
+<img src="./支付宝.jpg" width="60%"/>
