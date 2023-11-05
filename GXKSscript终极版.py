@@ -4,7 +4,10 @@ from lxml import etree
 
 session = requests.session()
 login_status = False
-courseList = []
+courseList = set()
+iiiii=0
+fff=False
+
 data_course = {
     'ddlClass': 25,
     '__EVENTTARGET': 'PageSplit1$ddlPage',
@@ -66,34 +69,38 @@ def _disclaimer():
 
 # todo class video存储视频相关信息
 class video:
-    def __init__(self, course, courseId, videoLength, isFinished, lookTime, id='', refId='', Mins='', StudentId='',
+    def __init__(self, course, courseId, videoLength, isFinished, lookTime, iiiii,id='', refId='', Mins='', StudentId='',
                  SessionID=''):
         self.course = course
         self.courseId = courseId
         self.videoLength = videoLength
         self.isFinished = isFinished
         self.lookTime = lookTime
-        self.id = id,
+        self.iiiii=iiiii
+        self.id = id
         self.refId = refId
         self.Mins = Mins
         self.StudentId = StudentId
         self.SessionID = SessionID
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.courseId == other.courseId
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash(self.courseId)
+    
+
+def compare(self):
+    return self.iiiii
 
 # todo Account information
 def _getInfo(mainResp,flag):
     if flag == False:
-        return
-    if flag==True:
-        et = etree.HTML(mainResp.text)
-        course = et.xpath('//tr[@onmouseover]/td[@class="pleft30"]/text()')
-        course_Id = et.xpath('//tr[@onmouseover]/td[6]/a/@onclick')  # 需要二次处理
-        video_Length = et.xpath('//tr[@onmouseover]/td[3]/text()')  # 需要二次处理
-        isFinished = et.xpath('//tr[@onmouseover]/td/span/text()')
-        look_Time = et.xpath('//tr[@onmouseover]/td[4]/text()')  # 需要二次处理
-        data_course['__VIEWSTATE'] = et.xpath('//*[@id="__VIEWSTATE"]/@value')[0]
-        data_course['__EVENTVALIDATION'] = et.xpath(
-            '//*[@id="__EVENTVALIDATION"]/@value')[0]
         return
     et = etree.HTML(mainResp.text)
     course = et.xpath('//tr[@onmouseover]/td[@class="pleft30"]/text()')
@@ -106,14 +113,18 @@ def _getInfo(mainResp,flag):
         '//*[@id="__EVENTVALIDATION"]/@value')[0]
     # print(course[0],course_Id[0],videoLength[0],isFinished[0],lookTime[0])代码错误
     Len = len(course)
+    global fff
+    if not fff :
+        fff=True
+        return
     for i in range(Len):
         courseId = course_Id[i].split(',')[-1][0:-1]
         videoLength = video_Length[i][0:-2]
         lookTime = look_Time[i][0:-2]
-        temp = video(course[i], courseId, videoLength, isFinished[i], lookTime)
-        courseList.append(temp)
-        print(course[i], 'videoLength:', videoLength,
-              'isFinished:', isFinished[i], 'lookTime:', lookTime)
+        global iiiii
+        temp = video(course[i], courseId, videoLength, isFinished[i], lookTime,iiiii)
+        courseList.add(temp)
+        iiiii+=1
 
 
 # todo Gets information about the course
@@ -129,6 +140,9 @@ def _getCourse(page, index=0):
         et = etree.HTML(mainResp.text)
         global id_course_ddlClass
         id_course_ddlClass = et.xpath('//*[@id="ddlClass"]/option/@value')
+        if len(id_course_ddlClass) == 1 :
+            global fff
+            fff=True    
     else:
         data_course['ddlClass'] = id_course_ddlClass[index]
         mainResp = session.post(mainUrl, headers=head, data=data_course)
@@ -212,6 +226,8 @@ if __name__ == '__main__':
                 break
             _getInfo(resp,flag)
     # 获取需要多长的时间刷课
+    courseList=(list(courseList))
+    courseList.sort(key=compare)
     countTime = -1
     for i in courseList:
         if i.isFinished == '已完成':
