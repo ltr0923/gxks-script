@@ -65,8 +65,8 @@ def _disclaimer():
     input('按任意键以继续...')
     print('欢迎使用高校考试网 www.gaoxiaokaoshi.com 自动刷课脚本')
     print('此脚本不参与任何交易，如果侵权的话，请联系我删库跑路。')
-    print('项目地址https://github.com/AlwaysLazy21/GXKSscript')
-    print('如果你感觉此脚本对你有帮助的话，可以给我一个★star')
+    print('项目地址https://github.com/AlwaysLazy21/gxks-script')
+    print('如果你感觉此脚本对你有帮助的话，可以给我一个 ★ star')
 
 
 # todo class video存储视频相关信息
